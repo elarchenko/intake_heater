@@ -8,6 +8,7 @@
 #define HEATER_LIMIT 40.0
 
 int heaterState = 0;
+int errorCount = 0;
 
 OneWire oneWire(ONE_WIRE_BUS);
 
@@ -45,9 +46,14 @@ void switchHeater(float afterTemp)
   if ((heaterState >= 0) && (afterTemp > -50.0) && (afterTemp < HEATER_LIMIT)) {
     digitalWrite(HEATER_RELAY, LOW);
     heaterState = 1;
+    errorCount = 0;
   } else {
-    digitalWrite(HEATER_RELAY, HIGH);
-    heaterState = -1;
+    if (errorCount > 2) {
+      digitalWrite(HEATER_RELAY, HIGH);
+      heaterState = -1;
+    } else {
+      errorCount += 1;
+    }
   }
   Serial.print("Heater state code: ");
   Serial.println(heaterState);
