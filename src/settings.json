@@ -1,1 +1,1 @@
-{"interval":15000,"limit":50,"lowLevel":0,"highLevel":15,"count":6,"delta":0.2,"cold":40.0}
+{"interval":15000,"limit":50,"lowLevel":-5,"highLevel":10,"count":6,"delta":0.2,"cold":40.0}

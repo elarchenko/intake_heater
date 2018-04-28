@@ -10,6 +10,8 @@ gpio.mode(heater_pin, gpio.OPENDRAIN)
 gpio.write(heater_pin, gpio.HIGH)
 gpio.mode(fan_pin, gpio.OPENDRAIN)
 gpio.write(fan_pin, gpio.HIGH)
+st.fan = 0
+st.heater = 0
 st.state = "off"
 wo.setup(sensor_pin)
 local sensor_b_rom = "28:FF:BE:38:A6:16:05:AF"
@@ -36,6 +38,12 @@ function sntp_sync_time()
 end
 
 function relay(id, s)
+  if (id == fan_pin) then
+    st.fan = s
+  end
+  if (id == heater_pin) then
+    st.heater = s
+  end
   if (s == 1) then
     gpio.write(id, gpio.LOW)
   else
@@ -124,24 +132,7 @@ function process()
   if (st.state == "cooling") then
     if (st.sensor_b ~= nil and st.sensor_b <= set.cold) then
       relay(fan_pin, 0)
-      tmr.stop(timer)
       st.state = "off"
-    end
-  end
-  
-  if (st.state == "work") then
-    if (st.sensor_a ~= nil and st.sensor_a <= set.lowLevel) then
-      relay(heater_pin, 1)
-      mem_t = st.sensor_a
-      count = set.count
-      rotate(1)
-      st.state = "changed"
-    end
-    if (st.sensor_a ~= nil and st.sensor_a >= set.highLevel) then
-      st.state = "changed"
-      mem_t = st.sensor_a
-      count = set.count
-      rotate(-1)
     end
   end
   
@@ -154,6 +145,26 @@ function process()
         count = set.count
         mem_t = st.sensor_a
       end
+    end
+  end
+  
+  if (st.state == "work") then
+    if (st.sensor_a ~= nil and st.sensor_a <= set.lowLevel) then
+      if (st.heater == 0) then
+        relay(heater_pin, 1)
+      else
+        rotate(1)
+      end
+      mem_t = st.sensor_a
+      count = set.count
+      st.state = "changed"
+    end
+    if (st.sensor_a ~= nil and st.sensor_a >= set.highLevel) then
+      relay(heater_pin, 0)
+      st.state = "changed"
+      mem_t = st.sensor_a
+      count = set.count
+      rotate(-1)
     end
   end
   
@@ -174,7 +185,6 @@ function switchOn()
     relay(fan_pin, 1)
     st.state = "work"
     st.details = "Starting"
-    tmr.start(timer)
   end
 end
 
@@ -195,6 +205,8 @@ function init()
 
   cron.schedule("0 9 * * 1,2,3,4,5", switchOff)
   cron.schedule("30 18 * * 1,2,3,4,5", switchOn)
+  
+  tmr.start(timer)
 end
 
 wrapper.switchOn = switchOn

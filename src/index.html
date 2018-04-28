@@ -1,94 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<link crossorigin="anonymous" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+<meta content="width=device-width, initial-scale=1" name="viewport" />
 </head>
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 <script>
 var app = angular.module("myApp", []);
-    app.controller('stateController',        
-    function sateController($http, $scope, $interval) {
-      var refresh = function() {
-        $http.get('state.json').then(function(response) {
-          $scope.data = response.data;
-        });
-      };
-      refresh();
-      $interval(refresh, 15000);
+  app.controller('appController',        
+  function appController($http, $scope, $interval) {
+    var refresh = function() {
+      $http.get('state.json').then(function(response) {
+        $scope.state = response.data;
+      });
+    };
+    refresh();
+    $interval(refresh, 15000);
+    $http.get('settings.json').then(function(response) {
+        $scope.settings = response.data;
     });
-    app.controller('settingsController',        
-    function settingsController($http, $scope) {        
-        $http.get('settings.json').then(function(response) {
-          $scope.data = response.data;
-        });
-        $scope.submit = function() {
-          console.log($scope.data);
-          $http.post('post.lua', "data=" + encodeURIComponent(JSON.stringify($scope.data))).then(function(response) {
-            if (response.data.result == 'OK') {
-              alert('Saved successfully');
-            }
-            else {
-              alert(response.data.result);
-            }
-          });
+    $scope.submit = function() {
+      $http.post('post.lua', "data=" + encodeURIComponent(JSON.stringify($scope.settings))).then(function(response) {
+        if (response.data.result == 'OK') {
+          alert('Saved successfully');
         }
-    });
-    app.controller('commandController',        
-    function commandController($http, $scope) {        
-      $scope.switchOn = function() {
-        $http.post('post.lua', "command=switchOn").then(function(response) {
-          if (response.data.result == 'OK') {
-            alert('Switched On!');
-          }
-          else {
-            alert(response.data.result);
-          }
-        });
+        else {
+          alert(response.data.result);
+        }
+      });
+    };
+    $scope.switchOn = function() {
+      $http.post('post.lua', "command=switchOn").then(function(response) {
+        if (response.data.result == 'OK') {
+          alert('Switched On!');
+        }
+        else {
+          alert(response.data.result);
+        }
+      });
+    }
+    $scope.switchOff = function() {
+      $http.post('post.lua', "command=switchOff").then(function(response) {
+        if (response.data.result == 'OK') {
+          alert('Switched off');
+        }
+        else {
+          alert(response.data.result);
+        }
+      });
+    }
+    $scope.isOnNotAvailable = function() {
+      if ($scope.state.state == "off") {
+        return false;
       }
-      $scope.switchOff = function() {
-        $http.post('post.lua', "command=switchOff").then(function(response) {
-          if (response.data.result == 'OK') {
-            alert('Switched off');
-          }
-          else {
-            alert(response.data.result);
-          }
-        });
+      else {
+        return true;
       }
-    });
+    }
+    $scope.isOffNotAvailable = function() {
+      if ($scope.state.state == "changed" | $scope.state.state == "work") {
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
+  });
 </script>
 <h1>Intake</h1>
-<hr>
-<div ng-app="myApp" class="container">
-<div ng-controller="stateController" class="form-group">
-<label>State: </label>{{data.state}}<br>
-<label>Sensor B: </label>{{data.sensor_b}}<br>
-<label>Sensor A: </label>{{data.sensor_a}}<br>
-<label>Time: </label>{{data.time}}<br>
-<label>Details: </label>{{data.details}}<br>
+<hr/>
+<div class="container" ng-controller="appController" ng-app="myApp">
+<div class="form-group">
+<label>State: </label>{{state.state}}<br/>
+<label>Sensor B: </label>{{state.sensor_b}}<br/>
+<label>Sensor A: </label>{{state.sensor_a}}<br/>
+<label>Time: </label>{{state.time}}<br/>
+<label>Details: </label>{{state.details}}<br/>
 </div>
-<form ng-controller="settingsController" class="form-group">
+<form class="form-group">
 <label>Interval:</label>
-<input type="number" ng-model="data.interval" step="1000">
+<input type="number" step="1000" ng-model="settings.interval" />
 <label>Sensor B limit level:</label>
-<input type="number" ng-model="data.limit">
+<input type="number" ng-model="settings.limit" />
 <label>Switching on level of sensor A:</label>
-<input type="number" ng-model="data.lowLevel">
+<input type="number" ng-model="settings.lowLevel" />
 <label>Switching off level of sensor A:</label>
-<input type="number" ng-model="data.highLevel">
+<input type="number" ng-model="settings.highLevel" />
 <label>Iterations before re-checking:</label>
-<input type="number" ng-model="data.count">
+<input type="number" ng-model="settings.count" />
 <label>Ignored delta with previous temperature:</label>
-<input type="number" step="0.01" ng-model="data.delta">
+<input type="number" ng-model="settings.delta" step="0.01" />
 <label>Sensor B is cold temperature:</label>
-<input type="number" ng-model="data.cold">
-<button ng-click="submit()" class="btn btn-default">Submit</button>
+<input type="number" ng-model="settings.cold" />
+<button class="btn btn-default" ng-click="submit()">Submit</button>
 </form>
-<form ng-controller="commandController" class="form-group">
-<button ng-click="switchOn()" class="btn btn-default">SwitchOn</button>
-<button ng-click="switchOff()" class="btn btn-default">SwitchOff</button>
+<form class="form-group">
+<button class="btn btn-default" ng-disabled="isOnNotAvailable()" ng-click="switchOn()">SwitchOn</button>
+<button class="btn btn-default" ng-disabled="isOffNotAvailable()" ng-click="switchOff()">SwitchOff</button>
 </form>
 </div>
 </body>
