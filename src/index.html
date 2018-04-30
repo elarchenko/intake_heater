@@ -66,6 +66,26 @@ var app = angular.module("myApp", []);
         return true;
       }
     }
+    $scope.heatUp = function() {
+      $http.post('post.lua', "command=heatUp").then(function(response) {
+        if (response.data.result == 'OK') {
+          alert('Warmer');
+        }
+        else {
+          alert(response.data.result);
+        }
+      });
+    }
+    $scope.heatDown = function() {
+      $http.post('post.lua', "command=heatDown").then(function(response) {
+        if (response.data.result == 'OK') {
+          alert('Colder');
+        }
+        else {
+          alert(response.data.result);
+        }
+      });
+    }
   });
 </script>
 <h1>Intake</h1>
@@ -93,9 +113,16 @@ var app = angular.module("myApp", []);
 <input type="number" ng-model="settings.delta" step="0.01" />
 <label>Sensor B is cold temperature:</label>
 <input type="number" ng-model="settings.cold" />
+<label>Steps per each change:</label>
+<input type="number" ng-model="settings.steps" />
+<label>Delay after each change:</label>
+<input type="number" ng-model="settings.delay" />
 <button class="btn btn-default" ng-click="submit()">Submit</button>
 </form>
 <form class="form-group">
+<button class="btn btn-default" ng-click="heatUp()">Make warmer</button>
+<button class="btn btn-default" ng-click="heatDown()">Make colder</button>
+<br>
 <button class="btn btn-default" ng-disabled="isOnNotAvailable()" ng-click="switchOn()">SwitchOn</button>
 <button class="btn btn-default" ng-disabled="isOffNotAvailable()" ng-click="switchOff()">SwitchOff</button>
 </form>

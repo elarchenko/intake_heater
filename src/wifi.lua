@@ -3,6 +3,7 @@ print("Connecting to the net...")
 wifi.setmode(wifi.STATION)
 local cfg={}
 cfg.ssid="Cave"
+cfg.pwd="fallofthedarkenraven"
 cfg.save=true
 wifi.sta.config(cfg)
 wifi.sta.connect()

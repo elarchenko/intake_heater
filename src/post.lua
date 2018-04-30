@@ -19,6 +19,14 @@ if cmd ~= nil then
     exec.switchOff()
     rsp = '{"result": "OK"}'
   end
+  if cmd == "heatUp" then
+    exec.rotate(1)
+    rsp = '{"result": "OK"}'
+  end
+  if cmd == "heatDown" then
+    exec.rotate(-1)
+    rsp = '{"result": "OK"}'
+  end
 end
 if rsp == nil then
   rsp = '{"result": "Error"}'
