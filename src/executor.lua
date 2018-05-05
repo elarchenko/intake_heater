@@ -166,11 +166,13 @@ function process()
       st.state = "changed"
     end
     if (st.sensor_a ~= nil and st.sensor_a >= set.highLevel) then
-      relay(heater_pin, 0)
-      st.state = "changed"
-      mem_t = st.sensor_a
-      count = set.count
-      rotate(-1)
+      if (st.heater == 1) then
+        relay(heater_pin, 0)
+        st.state = "changed"
+        mem_t = st.sensor_a
+        count = set.count
+        rotate(-1)
+      end
     end
   end
   
