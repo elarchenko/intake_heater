@@ -26,7 +26,7 @@ local prev_int = 15000
 tmr.register(timer, prev_int, tmr.ALARM_AUTO, function() process() end)
 st.sensor_a = nil
 st.sensor_b = nil
-st.details = "Initialization"
+st.details = ""
 local mem_t = 0.0
 local count = 6
 local tm = nil
@@ -74,7 +74,6 @@ end
 
 function process()
   print("Processing")
-  st.details = ""
   
   getSettings()
   if (prev_int ~= set.interval) then
@@ -118,12 +117,12 @@ function process()
     st.state = "err"
     st.details = "Overheated!"
   end
-  if (err_a >= 5) then
+  if (err_a >= count) then
     relay(heater_pin, 0)
     st.state = "err"
     st.details = "Sensor A isn't responding"
   end
-  if (err_b >= 5) then
+  if (err_b >= count) then
     relay(heater_pin, 0)
     st.state = "err"
     st.details = "Sensor B isn't responding"
@@ -210,7 +209,7 @@ end
 
 function switchOn()
   print("Turning on")
-  if (st.state ~= "err") then
+  if (st.state == "off") then
     err_a = -1
     err_b = -1
     relay(fan_pin, 1)
