@@ -175,6 +175,8 @@ function process()
     end
   end
   
+  st.rotation = adc.read(0)
+  
   saveState()
   print("Processed")
 end

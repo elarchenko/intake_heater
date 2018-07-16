@@ -3,9 +3,11 @@
 <head>
 <link crossorigin="anonymous" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
 <meta content="width=device-width, initial-scale=1" name="viewport" />
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 <script>
 var app = angular.module("myApp", []);
   app.controller('appController',        
@@ -38,6 +40,7 @@ var app = angular.module("myApp", []);
         else {
           alert(response.data.result);
         }
+        refresh();
       });
     }
     $scope.switchOff = function() {
@@ -48,6 +51,7 @@ var app = angular.module("myApp", []);
         else {
           alert(response.data.result);
         }
+        refresh();
       });
     }
     $scope.isOnNotAvailable = function() {
@@ -97,7 +101,10 @@ var app = angular.module("myApp", []);
 <label>Sensor A: </label>{{state.sensor_a}}<br/>
 <label>Time: </label>{{state.time}}<br/>
 <label>Details: </label>{{state.details}}<br/>
+<label>Rotation: </label>{{state.rotation}}
 </div>
+<button type="button" class="btn" data-toggle="collapse" data-target="#demo">Settings</button>
+<div id="demo" class="collapse">
 <form class="form-group">
 <label>Interval:</label>
 <input type="number" step="1000" ng-model="settings.interval" />
@@ -119,6 +126,7 @@ var app = angular.module("myApp", []);
 <input type="number" ng-model="settings.delay" />
 <button class="btn btn-default" ng-click="submit()">Submit</button>
 </form>
+</div>
 <form class="form-group">
 <button class="btn btn-default" ng-click="heatUp()">Make warmer</button>
 <button class="btn btn-default" ng-click="heatDown()">Make colder</button>
