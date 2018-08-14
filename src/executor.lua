@@ -59,7 +59,7 @@ end
 
 function saveState()
   st_string = sjson.encode(st)
-  if (file.open("state.json", "w")) then
+  if (file.open("state.json", "w+")) then
     file.write(st_string)
     file.close()
   end
@@ -74,7 +74,6 @@ end
 
 function process()
   print("Processing")
-  
   getSettings()
   if (prev_int ~= set.interval) then
     tmr.interval(timer, set.interval)
@@ -115,17 +114,17 @@ function process()
   if (st.sensor_b ~= nil and st.sensor_b >= set.limit) then
     relay(heater_pin, 0)
     st.state = "err"
-    st.details = "Overheated!"
+    st.details = "Overheated! " + sjson.encode(st)
   end
   if (err_a >= count) then
     relay(heater_pin, 0)
     st.state = "err"
-    st.details = "Sensor A isn't responding"
+    st.details = "Sensor A isn't responding. " + sjson.encode(st)
   end
   if (err_b >= count) then
     relay(heater_pin, 0)
     st.state = "err"
-    st.details = "Sensor B isn't responding"
+    st.details = "Sensor B isn't responding. " + sjson.encode(st)
   end
   
   if (st.state == "err") then
@@ -174,8 +173,6 @@ function process()
       end
     end
   end
-  
-  st.rotation = adc.read(0)
   
   saveState()
   print("Processed")
