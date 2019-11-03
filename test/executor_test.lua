@@ -66,6 +66,8 @@ function test1()
   prepare()
   process()
   luaunit.assertEquals(st.sensor_a, 20.98)
+  luaunit.assertEquals(gpio.get(fan_pin), 1)
+  luaunit.assertEquals(gpio.get(heater_pin), 1)
 end
 
 function test2()
@@ -79,6 +81,8 @@ function test2()
     process()
   end
   luaunit.assertEquals(st.state, "err")
+  luaunit.assertEquals(gpio.get(fan_pin), 1)
+  luaunit.assertEquals(gpio.get(heater_pin), 1)
 end
 
 function test3()
@@ -98,6 +102,8 @@ function test3()
     process()
   end
   luaunit.assertEquals(st.state, "work")
+  luaunit.assertEquals(gpio.get(fan_pin), 0)
+  luaunit.assertEquals(gpio.get(heater_pin), 1)
   wo.read = read_ab
   process()
   wo.read = read_a
@@ -105,6 +111,8 @@ function test3()
     process()
   end
   luaunit.assertEquals(st.state, "err")
+  luaunit.assertEquals(gpio.get(fan_pin), 1)
+  luaunit.assertEquals(gpio.get(heater_pin), 1)
 end
 
 function test4()
@@ -113,28 +121,47 @@ function test4()
   wrapper.saveState = save
   wrapper.getSettings = get
   actual_a = 1
-  actual_b = 22
+  actual_b = 1
   prepare()
   wrapper.switchOn()
   process()
   actual_a = 0
+  actual_b = 0
   process()
   actual_a = -2
+  actual_b = -2
   process()
   actual_a = -4
+  actual_b = -4
   process()
+  luaunit.assertEquals(gpio.get(fan_pin), 0)
+  luaunit.assertEquals(gpio.get(heater_pin), 1)
   actual_a = -6
+  actual_b = -6
   process()
   luaunit.assertEquals(st.state, "changed")
-  actual_a = 10
+  luaunit.assertEquals(gpio.get(fan_pin), 0)
+  luaunit.assertEquals(gpio.get(heater_pin), 0)
+  actual_a = 11
+  actual_b = 11
   process()
-  actual_a = 30
+  luaunit.assertEquals(gpio.get(fan_pin), 0)
+  luaunit.assertEquals(gpio.get(heater_pin), 1)
+  actual_a = 31
+  actual_b = 31
   process()
-  actual_a = 50
+  luaunit.assertEquals(gpio.get(fan_pin), 0)
+  actual_a = 51
+  actual_b = 51
   process()
-  actual_a = 70
+  luaunit.assertEquals(gpio.get(fan_pin), 0)
+  luaunit.assertEquals(gpio.get(heater_pin), 1)
+  actual_a = 31
+  actual_b = 31
   process()
   luaunit.assertEquals(st.state, "err")
+  luaunit.assertEquals(gpio.get(fan_pin), 1)
+  luaunit.assertEquals(gpio.get(heater_pin), 1)
 end
 
 function test5()

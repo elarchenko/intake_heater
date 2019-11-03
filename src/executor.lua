@@ -82,7 +82,6 @@ wrapper.getTime = function()
 end
 
 function process()
-  print("Processing")
   wrapper.getSettings()
   if (prev_int ~= set.interval) then
     tmr.interval(timer, set.interval)
@@ -122,12 +121,12 @@ function process()
   if (st.sensor_b ~= nil and st.sensor_b >= set.limit) then
     relay(heater_pin, 0)
     st.state = "err"
-    st.details = "Overheated!"
+    st.details = "Overheated by sensor a!"
   end
   if (st.sensor_a ~= nil and st.sensor_a >= set.limit) then
     relay(heater_pin, 0)
     st.state = "err"
-    st.details = "Overheated!"
+    st.details = "Overheated by sensor b!"
   end
   if (err_a >= count) then
     relay(heater_pin, 0)
@@ -166,32 +165,39 @@ function process()
       end
     end
     mem_t = st.sensor_a
+    checkHighTemp()
   end
   
   if (st.state == "work") then
     if (st.sensor_a ~= nil and st.sensor_a <= set.lowLevel) then
       if (st.heater == 0) then
+        st.details = "Turning on heater"
         relay(heater_pin, 1)
       else
+        st.details = "Making warmer"
         rotate(1)
       end
       mem_t = st.sensor_a
       count = set.count
       st.state = "changed"
     end
-    if (st.sensor_a ~= nil and st.sensor_a >= set.highLevel) then
-      if (st.heater == 1) then
-        relay(heater_pin, 0)
-        st.state = "changed"
-        mem_t = st.sensor_a
-        count = set.count
-        rotate(-1)
-      end
-    end
+    checkHighTemp()
   end
   
   wrapper.saveState()
-  print("Processed")
+end
+
+function checkHighTemp()
+  if (st.sensor_a ~= nil and st.sensor_a >= set.highLevel) then
+    if (st.heater == 1) then
+      st.details = "Turning off heater and making colder"
+      relay(heater_pin, 0)
+      st.state = "changed"
+      mem_t = st.sensor_a
+      count = set.count
+      rotate(-1)
+    end
+  end
 end
 
 function rotate(direction)
