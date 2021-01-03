@@ -22,8 +22,8 @@ st.fan = 0
 st.heater = 0
 st.state = "off"
 wo.setup(sensor_pin)
-local sensor_b_rom = "28:1F:C0:79:97:04:03:F3"
-local sensor_a_rom = "28:FF:18:60:A6:16:03:19"
+local sensor_b_rom = "28:7E:5D:79:97:04:03:5C"
+local sensor_a_rom = "28:FF:CA:79:97:04:03:67"
 wo.setting({sensor_b_rom, sensor_a_rom}, 10)
 local timer = tmr.create()
 local prev_int = 15000

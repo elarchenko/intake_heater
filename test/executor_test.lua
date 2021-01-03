@@ -5,12 +5,12 @@ local actual_b
 local rotation
 
 function read_a(bind, args)
-  bind(0,"40:255:24:96:166:22:03:25",9,actual_a,98,0)
+  bind(0,"40:255:202:121:151:04:03:103",9,actual_a,98,0)
 end
 
 function read_ab(bind, args)
-  bind(1,"40:31:192:121:151:04:03:243",9,actual_b,98,0)
-  bind(0,"40:255:24:96:166:22:03:25",9,actual_a,98,0)
+  bind(1,"40:126:93:121:151:04:03:92",9,actual_b,98,0)
+  bind(0,"40:255:202:121:151:04:03:103",9,actual_a,98,0)
 end
 
 function fakeTime()
